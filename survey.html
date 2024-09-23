@@ -1,0 +1,1150 @@
+<!-- Include JavaScript files -->
+<script src="https://assets.crowd.aws/crowd-html-elements.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<!-- Your script to handle the random selection and pagination -->
+<script>
+  var examples = [
+      { name: 'good_1', 
+        description: 'One person is helping the other to get up, like [source motion].', 
+            title: 'One person looks really relaxed in there. Can you make one person have more funny and enthusiasm?',
+            source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/sample/0/vod_source.mp4' ,
+            edited: 'https://github.com/jeongeun980906/MLM-videos/raw/main/sample/0/vod.mp4' ,
+        },
+        { name: 'good_2', 
+        description: 'Two individuals are sitting on the chair, like [source motion].', 
+            title: 'Yes, but I want the person initiating the action to appear more calculated and less aggressive. Can you adjust the scenario?',
+            source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/sample/1/vod.mp4' ,
+            edited: 'https://github.com/jeongeun980906/MLM-videos/raw/main/sample/1/vod_source.mp4' ,
+        },
+        { name: 'bad_1', 
+        description: 'Two individuals are in the office, like [source motion].', 
+            title: 'Can you make the motion more formal and respectful?',
+            source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/sample/2/vod_source.mp4' ,
+            edited: 'https://github.com/jeongeun980906/MLM-videos/raw/main/sample/2/vod.mp4' ,
+        },
+        { name: 'bad_2', 
+        description: 'Two people are talking, like [source motion].', 
+            title: 'One of the colleagues suddenly becomes very dramatic during their interaction. How might the motion change?',
+            source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/sample/3/vod_source.mp4' ,
+            edited: 'https://github.com/jeongeun980906/MLM-videos/raw/main/sample/3/vod.mp4' ,
+        },
+
+  ]
+  // Define your 20 instruction samples
+  var samples = [
+    {
+      number: 1,
+      description: 'Two individuals are practicing tai chi together, like [source motion].', 
+      title: 'One person suddenly becomes playful and starts teasing the other. How would the motion change?',
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/0/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/0/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/0/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/0/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/0/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/0/vod.mp4' },
+        // Add more methods and their image URLs if needed
+      ]
+    },
+    {
+      number: 2,
+      description: 'Two individuals are engaged in a piggyback ride, like [source motion].', 
+      title: 'One person seems to be very concerned and serious. Can you make this person more be loved and affectionated? ',
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/1/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/1/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/1/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/1/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/1/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/1/vod.mp4' },
+      ]
+    },
+	{
+      number: 3,
+      description: "One person circles around the other person, like [source motion]. ", 
+      title: "Let's make the person who is circling seem more focused and strategic. ",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/2/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/2/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/2/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/2/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/2/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/2/vod.mp4' },
+      ]
+    },
+	{
+      number: 4,
+      description: "I’m looking at a scenario where one person grabs another’s arm and pulls them upward while the other person balances on one leg, like [source motion]. ",
+      title: 'The person who is hopping seems a bit too playful. What if they were more determined and serious?',
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/3/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/3/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/3/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/3/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/3/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/3/vod.mp4' },
+      ]
+    },
+	{
+      number: 5,
+      description: "Two people are interacting, like [source motion]. ",
+      title: 'The person who is standing looks very stealthy and secretive. Can you adjust the motion to show more openness?',
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/4/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/4/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/4/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/4/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/4/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/4/vod.mp4' },
+      ]
+    },
+    {
+      number: 6,
+      description: "Two people are standing side-by-side, similar to [source motion]. ",
+      title: 'One person seems a bit too serious in the scenario. Can you make the interaction more playful?',
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/5/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/5/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/5/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/5/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/5/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/5/vod.mp4' },
+      ]
+    },
+    {
+      number: 7,
+      description: "Two people are kneeling side by side, one person pats the other on the head, like [source motion]. ",
+      title: 'Okay, but the first person looks too dominating here. Can you make the first person more respectful?',
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/6/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/6/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/6/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/6/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/6/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/6/vod.mp4' },
+      ]
+    },
+    {
+      number: 8,
+      description: "Two people perform a dance routine together, like [source motion]. ",
+      title: 'They looks a bit too excited in there. Can you make them more relaxed?',
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/7/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/7/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/7/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/7/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/7/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/7/vod.mp4' },
+      ]
+    },
+    {
+      number: 9,
+      description: "Let's create a scenario where one person sits on the chair and the other person approaches, like this [source motion]. ",
+      title: 'But can you make the person who approaches the other more caring?',
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/8/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/8/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/8/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/8/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/8/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/8/vod.mp4' },
+      ]
+    },
+    {
+      number: 10,
+      description: "Two people are hugging like [source motion]. ",
+      title: "How about we make the one person more relaxed?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/9/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/9/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/9/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/9/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/9/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/9/vod.mp4' },
+      ]
+    },
+    {
+      number: 11,
+      description: "Two people are practicing taekwondo kicks, like [source motion]. ",
+      title: "One of them becomes more cautious and observant due to an injury. What would happen next?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/10/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/10/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/10/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/10/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/10/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/10/vod.mp4' },
+      ]
+    },
+    {
+      number: 12,
+      description: "Two people are greeting, like [source motion]. ",
+      title: "Change the emotion of one person to someone who feels nervous or shy about the encounter.",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/11/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/11/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/11/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/11/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/11/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/11/vod.mp4' },
+      ]
+    },
+    {
+      number: 13,
+      description: "Two friends are walking side-by-side after one of them got an injury, like [source motion]. ",
+      title: "This looks too dramatic, can it be a bit more casual and less intense?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/12/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/12/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/12/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/12/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/12/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/12/vod.mp4' },
+      ]
+    },
+    {
+      number: 14,
+      description: "Two friends are exercising together, just like [source motion]. ",
+      title: "Okay, what if the second person looks less like a fitness trainer and more like a playful friend helping out?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/13/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/13/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/13/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/13/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/13/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/13/vod.mp4' },
+      ]
+    },
+    {
+      number: 15,
+      description: "Two people are in a hallway, and one is trying to get past the other like [source motion]. ",
+      title: "It looks too aggressive, can you adjust one person's behavior to be more polite?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/14/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/14/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/14/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/14/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/14/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/14/vod.mp4' },
+      ]
+    },
+    {
+      number: 16,
+      description: "Two friends are meeting up like in [source motion]. ",
+      title: "The first person seems way too aggressive. Can you make this person more gentle and friendly?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/15/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/15/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/15/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/15/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/15/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/15/vod.mp4' },
+      ]
+    },
+    {
+      number: 17,
+      description: "Two individuals are in a physical conflict, similar to [source motion]. ",
+      title: "I think one person seems too aggressive. What about making one more defensive?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/16/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/16/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/16/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/16/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/16/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/16/vod.mp4' },
+      ]
+    },
+    {
+      number: 18,
+      description: "Two friends meet after a long time and greet each other like [source motion]. ",
+      title: "Now, what if one of the friends becomes overly touched upon meeting the other friend?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/17/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/17/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/17/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/17/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/17/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/17/vod.mp4' },
+      ]
+    },
+    {
+      number: 19,
+      description: "Two individuals are holding hands, like [source motion]. ",
+      title: "Can you make one person become more cautious and the other people more aggresive?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/18/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/18/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/18/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/18/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/18/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/18/vod.mp4' },
+      ]
+    },
+    {
+      number: 20,
+      description: "Two colleagues meet in the hallway like, [source motion]. ",
+      title: "Can you make the greeting more formal?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/19/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/19/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/19/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/19/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/19/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/19/vod.mp4' },
+      ]
+    },
+    {
+      number: 21,
+      description: "Two people are fighting, like [source motion]. ",
+      title: "Okay, the fight seems too aggressive. Can you tone down the scene?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/20/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/20/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/20/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/20/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/20/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/20/vod.mp4' },
+      ]
+    },
+    {
+      number: 22,
+      description: "One person is guiding the other, just like [source motion].",
+      title: "Okay, but one person looks way too competitive. Can you make one person more supportive?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/21/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/21/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/21/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/21/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/21/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/21/vod.mp4' },
+      ]
+    },
+    {
+      number: 23,
+      description: "Let's create a story starting from [source motion].",
+      title: "How about we change the emotion of the younger person to be more defiant or resistant while the older sibling maintains their guiding motion?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/22/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/22/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/22/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/22/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/22/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/22/vod.mp4' },
+      ]
+    },
+    {
+      number: 24,
+      description: "Two friends are sitting next to each other, and one pats the other on the cheek, like [source motion].",
+      title: "The one getting patted feels uncomfortable. Can you generate what would happen then?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/23/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/23/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/23/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/23/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/23/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/23/vod.mp4' },
+      ]
+    },
+    {
+      number: 25,
+      description: "Let's start from this scenario where one person stands behind another and rubs his/her left shoulder with both hands, like [source motion].",
+      title: "The person standing seems too attentive, can you make him more casual instead?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/24/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/24/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/24/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/24/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/24/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/24/vod.mp4' },
+      ]
+    },
+    {
+      number: 26,
+      description: "Two people are greeting each other in excitement, like [source motion].",
+      title: "Now, let's change the second person's emotion to one of suspicion or mistrust.",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/25/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/25/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/25/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/25/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/25/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/25/vod.mp4' },
+      ]
+    },
+    {
+      number: 27,
+      description: "Two teammates are practicing a movement drill, like [source motion].",
+      title: "The person who jumped wants to show off his flexibility. How might the motion change?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/26/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/26/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/26/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/26/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/26/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/26/vod.mp4' },
+      ]
+    },{
+      number: 28,
+      description: "I am watching two people interacting in a scene quite aggressively. For instance, in [source motion].",
+      title: "Can you make the interaction less agressive and more friendly?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/27/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/27/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/27/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/27/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/27/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/27/vod.mp4' },
+      ]
+    },
+    {
+      number: 29,
+      description: "There's a scenario where one person stands in front of another, extending both arms to clasp the other person's shoulders who then steps back slightly, like [source motion].",
+      title: "The person stepping back seems a bit distant. Can you make them appear more reassured and supportive?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/28/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/28/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/28/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/28/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/28/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/28/vod.mp4' },
+      ]
+    },
+    {
+      number: 30,
+      description: "Two people are about to embrace, like [source motion].",
+      title: "One of them wants to avoid the embrace. How would this motion change?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/29/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/29/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/29/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/29/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/29/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/29/vod.mp4' },
+      ]
+    },
+    {
+      number: 31,
+      description: "I am observing a scenario where two people are interacting. Like, [source motion].",
+      title: "Now let’s say one person shows more caution instead of aggression in their movements. Can you describe that for me in the motion?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/30/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/30/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/30/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/30/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/30/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/30/vod.mp4' },
+      ]
+    },
+    {
+      number: 32,
+      description: "There's a scene of two individuals who rush towards each other, and collide, like [source motion].",
+      title: "What if one person is more disciplined and focused? How would that change the motion?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/31/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/31/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/31/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/31/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/31/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/31/vod.mp4' },
+      ]
+    },
+    {
+      number: 33,
+      description: "Two individuals are involved in a supportive motion similar to [source motion].",
+      title: "The second person, feeling uncertain, steps back to steady himself. How will the motion change?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/32/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/32/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/32/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/32/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/32/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/32/vod.mp4' },
+      ]
+    },
+    {
+      number: 34,
+      description: "Imagine two people are engaging in a synchronized activity, like [source motion].",
+      title: "Now, what if one of the individuals becomes tired and decides to perform a different motion? ",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/33/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/33/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/33/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/33/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/33/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/33/vod.mp4' },
+      ]
+    },
+    {
+      number: 35,
+      description: "Two people are in a confrontation, much like [source motion].",
+      title: "Now, imagine the second person is agile and tends to avoid fights rather than being punched. How would their motion change?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/34/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/34/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/34/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/34/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/34/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/34/vod.mp4' },
+      ]
+    },
+    {
+      number: 36,
+      description: "Two people are showing affection, like [source motion].",
+      title: "Can one person approach from the front?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/35/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/35/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/35/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/35/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/35/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/35/vod.mp4' },
+      ]
+    },
+    {
+      number: 37,
+      description: "Two individuals are preparing to follow a sequence of movements, as seen in [source motion]. ",
+      title: "Let's make the second person a bit more graceful and coordinated.",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/36/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/36/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/36/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/36/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/36/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/36/vod.mp4' },
+      ]
+    },
+    {
+      number: 38,
+      description: "I'm observing a scene where two individuals are interacting, one person touches the head of the second person firmly, and the second person tries to avoid, like [source motion].",
+      title: "Can we make the second person appear more gentle and calm in this situation?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/37/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/37/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/37/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/37/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/37/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/37/vod.mp4' },
+      ]
+    },
+    {
+      number: 39,
+      description: "Two colleagues are greeting each other, like [source motion].",
+      title: "One person feels excited about meeting their colleague. Can you generate the motion of what would happen then?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/38/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/38/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/38/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/38/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/38/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/38/vod.mp4' },
+      ]
+    },
+    {
+      number: 40,
+      description: "Two people are in a sword fight, with one person charging with a sword in their right hand, like in [source motion]. ",
+      title: "Can you make the aggressive person more cautious and avoid charging aggressively?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/39/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/39/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/39/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/39/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/39/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/39/vod.mp4' },
+      ]
+    },
+    {
+      number: 41,
+      description: "In the scene, one person supports another person's arm as they limp forward, like [source motion].",
+      title: "The person who is supporting felt extremely weak and collapsed suddenly. What would the motion look like then?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/40/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/40/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/40/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/40/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/40/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/40/vod.mp4' },
+      ]
+    },
+    {
+      number: 42,
+      description: "Two people are standing face-to-face, [source motion].",
+      title: "The yellow person's behavior seems a bit defensive. Can you make them more welcoming?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/41/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/41/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/41/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/41/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/41/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/41/vod.mp4' },
+      ]
+    },
+    {
+      number: 43,
+      description: "Let's create a story starting from [source motion].",
+      title: "Now, let's change the scenario where the second person becomes very excited to see the first person.",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/42/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/42/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/42/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/42/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/42/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/42/vod.mp4' },
+      ]
+    },
+    {
+      number: 44,
+      description: "I'm watching a scene where two individuals are wrestling, and it looks like [source motion].",
+      title: "Can we change the interaction more dramatic?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/43/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/43/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/43/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/43/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/43/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/43/vod.mp4' },
+      ]
+    },
+    {
+      number: 45,
+      description: "Let's create a story starting from [source motion].",
+      title: "Now, let's change the mood of the second person to be more dismissive or uninterested. How will the motion change?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/44/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/44/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/44/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/44/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/44/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/44/vod.mp4' },
+      ]
+    },
+    {
+      number: 46,
+      description: "Imagine a scene where two friends meet and does head-bumps, like [source motion].",
+      title: "Could you make one of them more respectful towards the other?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/45/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/45/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/45/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/45/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/45/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/45/vod.mp4' },
+      ]
+    },
+    {
+      number: 47,
+      description: "Let's create a story starting from [source motion]",
+      title: "What if the yellow person feels embarrassed to show affection publicly?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/46/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/46/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/46/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/46/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/46/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/46/vod.mp4' },
+      ]
+    },
+    {
+      number: 48,
+      description: "One person is pulling the other like, [source motion] ",
+      title: "Let's change the persona of the second person to be more resistant or reluctant.",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/47/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/47/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/47/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/47/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/47/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/47/vod.mp4' },
+      ]
+    },
+    {
+      number: 49,
+      description: "I'm seeing a scenario where one person blocking other's path, like [source motion].",
+      title: "Could you tone down the aggression in this scene? Maybe make the second person more understanding?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/48/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/48/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/48/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/48/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/48/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/48/vod.mp4' },
+      ]
+    },
+    {
+      number: 50,
+      description: "The two individuals are standing opposite one another. One person extends his right hand and forcefully shoves the other person's head, like [source motion]. ",
+      title: "The person doing the shoving looks too aggressive. Can you make him less aggressive and more cautious?",
+      source: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/49/vod_source.mp4' ,
+      images: [
+        { method: 'motingpt', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt/49/vod.mp4' },
+        { method: 'ours', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/ours/49/vod.mp4' },
+        { method: 'intergen', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/intergen/49/vod.mp4' },
+        { method: 'inst', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/inst/49/vod.mp4' },
+        { method: 'motiongpt_m', url: 'https://github.com/jeongeun980906/MLM-videos/raw/main/mgpt_m/49/vod.mp4' },
+      ]
+    },
+    // ... up to 20 instruction samples
+  ];
+
+  function getRandomSamples(arr, n) {
+    var result = [],
+        len = arr.length,
+        taken = [];
+    if (n > len)
+      throw new RangeError("getRandomSamples: more elements taken than available");
+    while (result.length < n) {
+      var x = Math.floor(Math.random() * len);
+      if (!taken.includes(x)) {
+        result.push(arr[x]);
+        taken.push(x);
+      }
+    }
+    return result;
+  }
+
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+
+  $(document).ready(function() {
+    shuffleArray(examples);
+    var selectedSamples = getRandomSamples(samples, 5);
+    var $formContent = $('#form-content');
+
+    // Create an HTML to display shuffled examples and the questionnaire on the first page
+    var examplesHtml = `
+      <!-- First Page for Shuffled Examples and Questionnaire -->
+      <div class="page" id="page0" style="display: block;">
+        <table class="table table-condensed table-bordered">
+            <h3> Please evaluate the following motion: </h3>
+          <tbody>
+    `;
+
+    examples.forEach(function(example, index) {
+
+      examplesHtml += `
+          <!-- Divider Line -->
+          <tr>
+            <td colspan="5">
+              <hr class="divider">
+            </td>
+          </tr>
+        `;
+
+      examplesHtml += `
+          <!-- Display the Image -->
+          <tr>
+            <td colspan="5" style="text-align:center;">
+              <!-- Videos Container -->
+              <h4>Scenario: ${example.description}</h4>
+              <h4>Editing Instruction: ${example.title}</h4>
+              <div style="display:flex; justify-content:center; align-items:center;">
+                <!-- First Video -->
+                <div style="margin-right:20px; text-align:center;">
+                  <h5>Source Motion</h5>
+                  <video width="600" height="400" controls loop>
+                    <source src="${example.source}" type="video/mp4">
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+                <!-- Second Video -->
+                <div style="text-align:center;">
+                  <h5>Generated Motion</h5>
+                  <video width="600" height="400" controls loop>
+                    <source src="${example.edited}" type="video/mp4">
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Categories for evaluation -->
+          <tr>
+            <td colspan="5" style="text-align:left; font-weight:bold;">
+              Content Similarity: The edited motion is still maintaining the original content.
+            </td>
+          </tr>
+          <tr>
+            <td><input type="radio" name="example${example.name}_content" value="1" required><label>Strongly Disagree</label></td>
+            <td><input type="radio" name="example${example.name}_content" value="2"><label>Disagree</label></td>
+            <td><input type="radio" name="example${example.name}_content" value="3"><label>Neutral</label></td>
+            <td><input type="radio" name="example${example.name}_content" value="4"><label>Agree</label></td>
+            <td><input type="radio" name="example${example.name}_content" value="5"><label>Strongly Agree</label></td>
+          </tr>
+          
+          <tr>
+            <td colspan="5" style="text-align:left; font-weight:bold;">
+              Alignment: The edited motion is following the editing command properly.
+            </td>
+          </tr>
+          <tr>
+            <td><input type="radio" name="example${example.name}_fidelity" value="1" required><label>Strongly Disagree</label></td>
+            <td><input type="radio" name="example${example.name}_fidelity" value="2"><label>Disagree</label></td>
+            <td><input type="radio" name="example${example.name}_fidelity" value="3"><label>Neutral</label></td>
+            <td><input type="radio" name="example${example.name}_fidelity" value="4"><label>Agree</label></td>
+            <td><input type="radio" name="example${example.name}_fidelity" value="5"><label>Strongly Agree</label></td>
+          </tr>
+          
+          <tr>
+            <td colspan="5" style="text-align:left; font-weight:bold;">
+              Quality of Motion: The quality of the motion is good, and the motion seems natural.
+            </td>
+          </tr>
+          <tr>
+            <td><input type="radio" name="example${example.name}_quality" value="1" required><label>Strongly Disagree</label></td>
+            <td><input type="radio" name="example${example.name}_quality" value="2"><label>Disagree</label></td>
+            <td><input type="radio" name="example${example.name}_quality" value="3"><label>Neutral</label></td>
+            <td><input type="radio" name="example${example.name}_quality" value="4"><label>Agree</label></td>
+            <td><input type="radio" name="example${example.name}_quality" value="5"><label>Strongly Agree</label></td>
+          </tr>
+      ` 
+          });
+    examplesHtml += `
+        </tbody>
+        </table>
+        <!-- Navigation Button -->
+        <div class="navigation-buttons">
+          <button type="button" class="next-button">Next</button>
+        </div>
+      </div>
+    `;
+
+    // Append the shuffled examples and questionnaire HTML to the form content
+    $('#form-content').append(examplesHtml);
+
+    selectedSamples.forEach(function(sample, index) {
+      // Shuffle the images array for this sample
+      shuffleArray(sample.images);
+
+      var sampleHtml = `
+        <!-- Page Wrapper -->
+        <div class="page" id="page${index + 1}" style="display: none;">
+          <table class="table table-condensed table-bordered">
+            <h3>${index + 1}. Rate the edited motion. In the same page, you will see five different edited motions with same source motion and the insturction. </h3>
+            <tbody>
+      `;
+      // Add a line after each question box
+      sampleHtml += `
+          <!-- Divider Line -->
+          <tr>
+            <td colspan="5">
+              <hr class="divider">
+            </td>
+          </tr>
+        `;
+
+      sample.images.forEach(function(imageObj, imgIndex) {
+        sampleHtml += `
+          <!-- Display the Image -->
+          <tr>
+            <td colspan="5" style="text-align:center;">
+              <!-- Videos Container -->
+              <h4>Method ${imgIndex + 1}</h4>
+              <h4>Scenario: ${sample.description}</h4>
+              <h4>Editing Instruction: ${sample.title}</h4>
+              <div style="display:flex; justify-content:center; align-items:center;">
+                <!-- First Video -->
+                <div style="margin-right:20px; text-align:center;">
+                  <h5>Source Motion</h5>
+                  <video width="600" height="400" controls loop>
+                    <source src="${sample.source}" type="video/mp4">
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+                <!-- Second Video -->
+                <div style="text-align:center;">
+                  <h5>Generated Motion</h5>
+                  <video width="600" height="400" controls loop>
+                    <source src="${imageObj.url}" type="video/mp4">
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+              </div>
+            </td>
+          </tr>
+        `;
+
+        // Categories to rate
+        var categories = [
+          { name: 'Content Similarity. The edited motion is still maintaining the original content. ', shortName: 'content' },
+          { name: 'Alignment. The edited motion is following the editing command properly.', shortName: 'fidelity' },
+          { name: 'Quality of Motion. The quality of the motion is good and motion seems natural.', shortName: 'quality' }
+        ];
+
+        categories.forEach(function(category) {
+          // Generate Likert scale for each category
+          sampleHtml += `
+            <!-- Category Title -->
+            <tr>
+              <td colspan="5" style="text-align:left; font-weight:bold;">
+                ${category.name}
+              </td>
+            </tr>
+            <!-- Likert Scale -->
+            <tr>
+              <td><input type="radio" name="sample${index}_img${imgIndex}_${category.shortName}" value="1" required><label>Strongly Disagree</label></td>
+              <td><input type="radio" name="sample${index}_img${imgIndex}_${category.shortName}" value="2"><label>Disagree</label></td>
+              <td><input type="radio" name="sample${index}_img${imgIndex}_${category.shortName}" value="3"><label>Neutral</label></td>
+              <td><input type="radio" name="sample${index}_img${imgIndex}_${category.shortName}" value="4"><label>Agree</label></td>
+              <td><input type="radio" name="sample${index}_img${imgIndex}_${category.shortName}" value="5"><label>Strongly Agree</label></td>
+            </tr>
+            
+          `;
+        });
+
+        // Hidden input to store the method
+        sampleHtml += `
+          <input type="hidden" name="sample${index}_img${imgIndex}_method" value="${imageObj.method}">
+        `;
+        // Add a line after each question box
+        sampleHtml += `
+          <!-- Divider Line -->
+          <tr>
+            <td colspan="5">
+              <hr class="divider">
+            </td>
+          </tr>
+        `;
+      });
+      sampleHtml += `
+            </tbody>
+          </table>
+          <!-- Navigation Buttons -->
+          <div class="navigation-buttons">
+          <button type="button" class="prev-button">Previous</button>
+          ${index < selectedSamples.length - 1 ? '<button type="button" class="next-button">Next</button>' : '<button type="submit">Submit</button>'}
+        </div>
+      </div>
+      `;
+
+      // Append the generated HTML to the form content div
+      $formContent.append(sampleHtml);
+    });
+
+    // Attach event handlers after appending HTML
+    $('#form-content').on('click', '.next-button', function() {
+      var $currentPage = $(this).closest('.page');
+
+      // Check if all required inputs in the current page are filled
+      var isValid = true;
+      $currentPage.find('input[required]:visible').each(function() {
+        if (!$('input[name="' + $(this).attr('name') + '"]:checked').length) {
+          isValid = false;
+          return false; // Exit the each loop
+        }
+      });
+      if (isValid) {
+        var $nextPage = $currentPage.next('.page');
+        if ($nextPage.length) {
+          $currentPage.hide();
+          $nextPage.show();
+          window.scrollTo(0, 0);
+        }
+      } else {
+        alert('Please complete all required fields before proceeding.');
+      }
+    });
+
+    $('#form-content').on('click', '.prev-button', function() {
+      var $currentPage = $(this).closest('.page');
+      var $prevPage = $currentPage.prev('.page');
+      if ($prevPage.length) {
+        $currentPage.hide();
+        $prevPage.show();
+        window.scrollTo(0, 0);
+      }
+    });
+  });
+</script>
+
+<!-- Your crowd-form without static content -->
+<crowd-form answer-format="flatten-objects">
+  <crowd-instructions link-text="View instructions" link-type="button">
+    <!-- Your instructions here -->
+    <short-summary>
+      <p>We are conducting an academic survey about the quality of generated motions. 
+        We need to understand your opinion about the motion quality and ability to follow the editing commands. 
+        Please evaluate each motions based on the given criteria.</p>
+      <p>You will be presented with multiple instruction samples. 
+        After completing the evaluations on each page, click "Next" to proceed.
+        On the last page, click "Submit" to complete the survey.</p>
+    </short-summary>
+    <detailed-instructions>
+      <h4>Objective:</h4>
+      <p >We are conducting an academic survey aimed at evaluating the quality of AI-generated motions. 
+        Your input is essential in helping us understand how well the generated motions follow the provided instructions and maintain natural quality. 
+        This survey will guide us in improving the AI's ability to create lifelike movements and align with specific editing instructions.
+      </p>
+      <h4>Survey Overview:</h4>
+      <p>  You will be shown a source motion alongside an edited motion. 
+        Your task is to evaluate both based on specific criteria.
+        After evaluating a few pre-selected examples, you will also be asked to rate several edited motions generated from the same source motion but using different methods.
+        The survey is split into multiple pages, with each page containing one scenario.
+         You can navigate through the pages using "Next" or "Previous" buttons, and you can only proceed after completing all the required fields on the current page.
+      </p>
+      <h4>Evaluation Criteria:</h4>
+      <p>
+        For each pair of videos (source and edited), you will be asked to evaluate based on the following:</p>
+        
+        <p>- Content Similarity:
+        
+        Does the edited motion maintain the original content of the source motion?<br>
+        Example rating scale:<br>
+        1 (Strongly Disagree) to 5 (Strongly Agree)
+      </p>
+      <p>
+        - Alignment with Instruction:
+        Does the edited motion follow the editing command accurately?<br>
+        Example rating scale:<br>
+        1 (Strongly Disagree) to 5 (Strongly Agree)
+      </p>
+      <p>
+        - Motion Quality:
+        
+        Is the quality of the edited motion good and does it appear natural? <br>
+        Example rating scale:<br>
+        1 (Strongly Disagree) to 5 (Strongly Agree)
+      </p>
+      <h4>Survey Structure:</h4>
+      <p>
+        The survey is divided into two sections: </p>
+      <p>
+        - Evaluation of Pre-selected Motion Examples:<br>
+        In the first section, you will evaluate a few hand-picked examples of edited motions. Each example will have its own source and edited video pair.
+        Rate the content similarity, alignment with instruction, and the quality of motion for each video pair.
+        Evaluation of Randomly Selected Motion Samples:
+        In the second section, you will be presented with 5 randomly selected scenarios. For each scenario, five different edited motions will be displayed, each generated using different methods.
+        You will be asked to rate each generated motion based on the same criteria (content similarity, alignment, and motion quality).
+      </p>
+      <p>
+        - Instructions: <br>
+        Start by reviewing the pre-selected motion examples: 
+        
+        Each page contains a scenario description, an editing instruction, and two videos: the source motion and the edited motion.
+        After watching the videos, use the provided radio buttons to rate each pair on the three criteria.
+        Click "Next" to proceed to the next example.
+        Evaluate randomly selected scenarios:
+        
+        For each scenario, you will be presented with five different edited motions. Review all the videos and rate each of them based on the same criteria as in the first section.
+        You can navigate between scenarios using "Next" and "Previous" buttons.
+      </p>
+      <p>        
+        - Completion:<br>
+        
+        Once you have completed all the evaluations, click "Submit" to finish the survey.
+      </p>
+      <h4>Tips: </h4>
+      <p>
+        Make sure you review the entire motion in both videos before making your decision.
+        If you're unsure about a rating, select "Neutral" to indicate a balanced evaluation.
+        All required fields must be completed before you can move to the next page or submit your results.</p>
+    </detailed-instructions>
+    <positive-example>
+        <p>Example of a good answer:</p>
+      <p>
+        <strong>Scenario:</strong> Two friends are greeting each other like, [source motion] <br>
+        <strong>Editing Instruction:</strong> Let's change the persona of one friend to someone who is more formal.
+      </p>
+      
+      <!-- Videos for positive example -->
+      <div style="display:flex; justify-content:center; align-items:center;">
+        <!-- Source Motion -->
+        <div style="margin-right:20px; text-align:center;">
+          <h5>Source Motion</h5>
+          <video width="200" height="150" controls loop>
+            <source src="https://github.com/jeongeun980906/MLM-videos/raw/main/sample/4/vod_source.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+        
+        <!-- Edited Motion -->
+        <div style="text-align:center;">
+          <h5>Edited Motion</h5>
+          <video width="200" height="150" controls loop>
+            <source src="https://github.com/jeongeun980906/MLM-videos/raw/main/sample/4/vod.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </div>
+
+      <p>Answer:</p>
+      <p>
+        <strong>Content Similarity:</strong> 4 (Agree)<br>
+        <strong>Alignment:</strong> 4 (Agree)<br>
+        <strong>Quality of Motion:</strong> 5 (Strongly Agree)
+      </p>
+      <p>Explanation:</p>
+      <p>
+        This is a good answer because the edited motion still closely matches the original content of greeting.
+        The "Alignment" score of 4 indicates the formal behavior was captured, but some aspects could be improved. 
+        The "Quality of Motion" received the highest score as the motion was fluid and natural.
+      </p>
+    </positive-example>
+
+    <negative-example>
+      <p>Example of a bad answer:</p>
+      <p>
+        <strong>Scenario:</strong> Two people are standing facing each other, like [source motion]. <br>
+        <strong>Editing Instruction:</strong> What if the person being pulled becomes joyful and wants to express happiness through their motion?
+      </p>
+      
+      <!-- Videos for positive example -->
+      <div style="display:flex; justify-content:center; align-items:center;">
+        <!-- Source Motion -->
+        <div style="margin-right:20px; text-align:center;">
+          <h5>Source Motion</h5>
+          <video width="200" height="150" controls loop>
+            <source src="https://github.com/jeongeun980906/MLM-videos/raw/main/sample/5/vod_source.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+        
+        <!-- Edited Motion -->
+        <div style="text-align:center;">
+          <h5>Edited Motion</h5>
+          <video width="200" height="150" controls loop>
+            <source src="https://github.com/jeongeun980906/MLM-videos/raw/main/sample/5/vod.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </div>
+
+      <p>Answer:</p>
+      <p>
+        <strong>Content Similarity:</strong> 5 (Strongly Agree)<br>
+        <strong>Alignment:</strong> 2 (Agree)<br>
+        <strong>Quality of Motion:</strong> 5 (Strongly Agree)
+      </p>
+      <p>Explanation:</p>
+      <p>
+        This is a poor answer because the edited motion does not include any pulling motions or scenes involving holding hands, which were part of the source motion. 
+        While the edited motion somehow conveys emotions like happiness or joy, which aligns with the instruction, the alignment score should have been rated higher. 
+        Additionally, the motion contains noticeable noise and large vibrations, which negatively impact its quality, so the quality score should be rated lower.
+      </p>
+    </negative-example>
+
+  </crowd-instructions>
+  <!-- The form content will be dynamically generated -->
+  <div id="form-content"></div>
+</crowd-form>
+
+<style>
+  .navigation-buttons {
+    text-align: center;
+    margin-top: 20px;
+  }
+  .navigation-buttons button {
+    margin: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+  }
+  .divider {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 20px 0;
+  }
+</style>
